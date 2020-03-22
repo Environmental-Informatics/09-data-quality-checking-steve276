@@ -44,6 +44,9 @@ def Check01_RemoveNoDataValues( DataDF, ReplacedValuesDF ):
                          ReplacedValuesDF[colNames[1:]],
                          ND_counts[colNames[1:]] \
                          )
+    
+    # output checked data
+    DataDF.to_csv('Checked-data.txt',header=None, sep=" ")
 
     return( DataDF, ReplacedValuesDF )
     
@@ -93,6 +96,8 @@ def Check02_GrossErrors( DataDF, ReplacedValuesDF ):
     DataDF.loc[DataDF['Wind Speed'] < 0, 'Wind Speed'] = np.NaN
     DataDF.loc[DataDF['Wind Speed'] > 10, 'Wind Speed'] = np.NaN
     
+    # output checked data
+    DataDF.to_csv('Checked-data.txt',header=None, sep=" ")
     
     # update missing data dictionary
     ReplacedValuesDF.loc["2. Gross Error"] = [a,b,c,d]
@@ -140,6 +145,13 @@ def Check04_TmaxTminRange( DataDF, ReplacedValuesDF ):
 
     return( DataDF, ReplacedValuesDF )
     
+ReadData("DataQualityChecking.txt") 
+Check01_RemoveNoDataValues( DataDF, ReplacedValuesDF )  
+Check02_GrossErrors( DataDF, ReplacedValuesDF )
+#Check03_TmaxTminSwapped( DataDF, ReplacedValuesDF )
+#Check04_TmaxTminRange( DataDF, ReplacedValuesDF )
+
+
 
 # the following condition checks whether we are running as a script, in which 
 # case run the test code, otherwise functions are being imported so do not.
@@ -169,15 +181,14 @@ if __name__ == '__main__':
     print("\nAll processing finished.....\n", DataDF.describe())
     print("\nFinal changed values counts.....\n", ReplacedValuesDF)
     
+    
 # Below are the plots for before and after each data quality check
-# and where the checked data and dta quality summary are written to a file
-
+# and write fail check summary to file
+    
+    
 # output summary of failed checks
-ReplacedValuesDF.to_csv('Fail-checks-summary.txt', sep='\t')  
-
-# output checked data
-DataDF.to_csv('Checked-data.txt',header=None, sep=" ")
-
+ReplacedValuesDF.to_csv('Fail-checks-summary.txt', sep='\t')      
+    
 # generate plots    
 import matplotlib.pyplot as plt
 colNames = ['Date','Precip','Max Temp', 'Min Temp','Wind Speed']
