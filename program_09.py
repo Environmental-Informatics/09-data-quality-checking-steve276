@@ -145,11 +145,7 @@ def Check04_TmaxTminRange( DataDF, ReplacedValuesDF ):
 
     return( DataDF, ReplacedValuesDF )
     
-ReadData("DataQualityChecking.txt") 
-Check01_RemoveNoDataValues( DataDF, ReplacedValuesDF )  
-Check02_GrossErrors( DataDF, ReplacedValuesDF )
-#Check03_TmaxTminSwapped( DataDF, ReplacedValuesDF )
-#Check04_TmaxTminRange( DataDF, ReplacedValuesDF )
+
 
 
 
@@ -182,74 +178,80 @@ if __name__ == '__main__':
     print("\nFinal changed values counts.....\n", ReplacedValuesDF)
     
     
-# Below are the plots for before and after each data quality check
-# and write fail check summary to file
+    # Below are the plots for before and after each data quality check
+    # and write fail check summary to file
+    
+    ReadData("DataQualityChecking.txt") 
+    Check01_RemoveNoDataValues( DataDF, ReplacedValuesDF )  
+    Check02_GrossErrors( DataDF, ReplacedValuesDF )
+    #Check03_TmaxTminSwapped( DataDF, ReplacedValuesDF )
+    #Check04_TmaxTminRange( DataDF, ReplacedValuesDF )
     
     
-# output summary of failed checks
-ReplacedValuesDF.to_csv('Fail-checks-summary.txt', sep='\t')      
+    # output summary of failed checks
+    ReplacedValuesDF.to_csv('Fail-checks-summary.txt', sep='\t')      
     
-# generate plots    
-import matplotlib.pyplot as plt
-colNames = ['Date','Precip','Max Temp', 'Min Temp','Wind Speed']
+    # generate plots    
+    import matplotlib.pyplot as plt
+    colNames = ['Date','Precip','Max Temp', 'Min Temp','Wind Speed']
 
-DataDF1 = pd.read_csv("DataQualityChecking.txt",header=None, names=colNames,  
+    DataDF1 = pd.read_csv("DataQualityChecking.txt",header=None, names=colNames,  
                          delimiter=r"\s+",parse_dates=[0])
 
-DataDF1 = DataDF1.set_index('Date')
+    DataDF1 = DataDF1.set_index('Date')
 
-DataDF2 = DataDF1.replace(-999, np.NaN)
+    DataDF2 = DataDF1.replace(-999, np.NaN)
 
-#make 2nd plot here before DataDF2 is changed
+    #make 2nd plot here before DataDF2 is changed
 
-DataDF3 = DataDF2
+    DataDF3 = DataDF2
     
-DataDF3.loc[DataDF3['Precip'] < 0, 'Precip'] = np.NaN
-DataDF3.loc[DataDF3['Precip'] > 25, 'Precip'] = np.NaN
-DataDF3.loc[DataDF3['Max Temp'] < -25, 'Max Temp'] = np.NaN  
-DataDF3.loc[DataDF3['Max Temp'] > 35, 'Max Temp'] = np.NaN 
-DataDF3.loc[DataDF3['Min Temp'] < -25, 'Min Temp'] = np.NaN
-DataDF3.loc[DataDF3['Min Temp'] > 35, 'Min Temp'] = np.NaN
-DataDF3.loc[DataDF3['Wind Speed'] < 0, 'Wind Speed'] = np.NaN
-DataDF3.loc[DataDF3['Wind Speed'] > 10, 'Wind Speed'] = np.NaN  
+    DataDF3.loc[DataDF3['Precip'] < 0, 'Precip'] = np.NaN
+    DataDF3.loc[DataDF3['Precip'] > 25, 'Precip'] = np.NaN
+    DataDF3.loc[DataDF3['Max Temp'] < -25, 'Max Temp'] = np.NaN  
+    DataDF3.loc[DataDF3['Max Temp'] > 35, 'Max Temp'] = np.NaN 
+    DataDF3.loc[DataDF3['Min Temp'] < -25, 'Min Temp'] = np.NaN
+    DataDF3.loc[DataDF3['Min Temp'] > 35, 'Min Temp'] = np.NaN
+    DataDF3.loc[DataDF3['Wind Speed'] < 0, 'Wind Speed'] = np.NaN
+    DataDF3.loc[DataDF3['Wind Speed'] > 10, 'Wind Speed'] = np.NaN  
 
-x = DataDF1.index 
+    x = DataDF1.index 
 
-# Precipitation Plot
-fig, (ax1,ax2) = plt.subplots(nrows=2,ncols=1)
-fig.suptitle('Precipitation (mm)')
+    # Precipitation Plot
+    fig, (ax1,ax2) = plt.subplots(nrows=2,ncols=1)
+    fig.suptitle('Precipitation (mm)')
 
-ax1.plot(x, DataDF1['Precip'], 'k', label="Before no data & gross error check")
-ax1.set_xticklabels([])
-ax1.legend(loc='upper center', bbox_to_anchor=(0.5,-1.5))
+    ax1.plot(x, DataDF1['Precip'], 'k', label="Before no data & gross error check")
+    ax1.set_xticklabels([])
+    ax1.legend(loc='upper center', bbox_to_anchor=(0.5,-1.5))
 
-ax2.plot(x, DataDF3['Precip'], 'r', label="After check")
-ax2.set_xlabel('Date')
-ax2.set_xticklabels(['','1915-03','','','','1916-03','','','1916-12'])
-ax2.legend(loc='upper center', bbox_to_anchor=(0.5,-0.5))
+    ax2.plot(x, DataDF3['Precip'], 'r', label="After check")
+    ax2.set_xlabel('Date')
+    ax2.set_xticklabels(['','1915-03','','','','1916-03','','','1916-12'])
+    ax2.legend(loc='upper center', bbox_to_anchor=(0.5,-0.5))
 
-plt.savefig('Precipitation-Before-After.pdf', bbox_inches='tight')
-
-
-# Wind Speed Plot
-fig, (ax1,ax2) = plt.subplots(nrows=2,ncols=1)
-fig.suptitle('Wind Speed (m/s)')
-
-ax1.plot(x, DataDF1['Wind Speed'], 'k', label="Before check")
-ax1.set_xticklabels([])
-ax1.legend(loc='upper center', bbox_to_anchor=(0.5,-1.5))
-
-ax2.plot(x, DataDF3['Wind Speed'], 'r', label="After check")
-ax2.set_xlabel('Date')
-ax2.set_xticklabels(['','1915-03','','','','1916-03','','','1916-12'])
-ax2.legend(loc='upper center', bbox_to_anchor=(0.5,-0.5))
-
-plt.savefig('Wind-speed_Before-After.pdf', bbox_inches='tight')
+    plt.savefig('Precipitation-Before-After.pdf', bbox_inches='tight')
 
 
-#DataDF4 =
+    # Wind Speed Plot
+    fig, (ax1,ax2) = plt.subplots(nrows=2,ncols=1)
+    fig.suptitle('Wind Speed (m/s)')
 
-#DataDF5 = 
+    ax1.plot(x, DataDF1['Wind Speed'], 'k', label="Before check")
+    ax1.set_xticklabels([])
+    ax1.legend(loc='upper center', bbox_to_anchor=(0.5,-1.5))
+
+    ax2.plot(x, DataDF3['Wind Speed'], 'r', label="After check")
+    ax2.set_xlabel('Date')
+    ax2.set_xticklabels(['','1915-03','','','','1916-03','','','1916-12'])
+    ax2.legend(loc='upper center', bbox_to_anchor=(0.5,-0.5))
+
+    plt.savefig('Wind-speed_Before-After.pdf', bbox_inches='tight')
+
+
+    #DataDF4 =
+
+    #DataDF5 = 
     
  
     
