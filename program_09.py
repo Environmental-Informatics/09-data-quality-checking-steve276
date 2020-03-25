@@ -181,15 +181,15 @@ if __name__ == '__main__':
     # Below are the plots for before and after each data quality check
     # and write fail check summary to file
     
+    # output summary of failed checks
+    ReplacedValuesDF.to_csv('Fail-checks-summary.txt', sep='\t') 
+    
     ReadData("DataQualityChecking.txt") 
     Check01_RemoveNoDataValues( DataDF, ReplacedValuesDF )  
     Check02_GrossErrors( DataDF, ReplacedValuesDF )
     #Check03_TmaxTminSwapped( DataDF, ReplacedValuesDF )
     #Check04_TmaxTminRange( DataDF, ReplacedValuesDF )
-    
-    
-    # output summary of failed checks
-    ReplacedValuesDF.to_csv('Fail-checks-summary.txt', sep='\t')      
+         
     
     # generate plots    
     import matplotlib.pyplot as plt
